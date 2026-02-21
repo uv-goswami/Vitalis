@@ -1,20 +1,19 @@
 export function stripMarkdown(text: string): string {
   if (!text) return '';
   return text
-    .replace(/\*\*(.*?)\*\*/g, '$1') // Bold
-    .replace(/\*(.*?)\*/g, '$1')     // Italic
-    .replace(/__(.*?)__/g, '$1')     // Underline
-    .replace(/_(.*?)_/g, '$1')       // Italic
-    .replace(/#(.*?)\n/g, '$1\n')    // Headers
-    .replace(/`(.*?)`/g, '$1')       // Code
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Links
-    .replace(/^\s*[-*+]\s+/gm, '')   // Bullet points
+    .replace(/\*\*(.*?)\*\*/g, '$1') 
+    .replace(/\*(.*?)\*/g, '$1')     
+    .replace(/__(.*?)__/g, '$1')    
+    .replace(/_(.*?)_/g, '$1')       
+    .replace(/#(.*?)\n/g, '$1\n')    
+    .replace(/`(.*?)`/g, '$1')       
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+    .replace(/^\s*[-*+]\s+/gm, '')
     .trim();
 }
 
 export function chunkResponse(text: string): string[] {
   const clean = stripMarkdown(text);
-  // Split by sentence endings (. ! ?) followed by a space or newline
   const chunks = clean.match(/[^.!?]+[.!?]+(?:\s|\n|$)|[^.!?]+$/g) || [clean];
   return chunks.map(c => c.trim()).filter(c => c.length > 0);
 }

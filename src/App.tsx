@@ -22,7 +22,6 @@ export function App() {
     setProfile(final);
   };
 
-  // ----- ONBOARDING VIEW -----
   if (!profile.onboarded) {
     return (
       <div className="app" style={{ alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
@@ -72,10 +71,9 @@ export function App() {
     );
   }
 
-  // ----- MAIN APP VIEW -----
   return (
     <div className="app">
-      {/* HEADER */}
+      {}
       <header className="app-header">
         <div className="header-brand">
           <div className="header-logo"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg></div>
@@ -89,7 +87,7 @@ export function App() {
         </div>
       </header>
 
-      {/* CONTENT BODY */}
+      {}
       <main className="app-body">
         <div style={{ display: activeTab === 'home' ? 'flex' : 'none', flex: 1, flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
           <DashboardTab onNav={setActiveTab} />
@@ -114,7 +112,7 @@ export function App() {
         </div>
       </main>
 
-      {/* BOTTOM NAV */}
+      {}
       <nav className="app-nav">
         <button className={`nav-btn ${activeTab === 'home' ? 'active' : ''}`} onClick={() => setActiveTab('home')}>
           <div className="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg></div>

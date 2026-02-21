@@ -27,7 +27,6 @@ function setGlobal(s: LoaderState, p = _globalProgress) {
   notify();
 }
 
-// Triggers the UI to reset and load the new model when switched
 export async function switchAIModel(newModelId: string) {
   if (_activeModelId === newModelId) return;
   _activeModelId = newModelId;
@@ -42,7 +41,7 @@ async function doLoad(onProgress?: (p: number) => void): Promise<boolean> {
   _loadPromise = (async () => {
     try {
       await initSDK();
-      const targetId = _activeModelId; // capture the currently selected model
+      const targetId = _activeModelId;
       
       const models = ModelManager.getModels().filter(m => m.id === targetId);
       if (models.length === 0) {

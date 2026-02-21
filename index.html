@@ -13,7 +13,6 @@
   <link rel="apple-touch-icon" href="/icon.svg" />
   <title>Vitalis AI</title>
   <style>
-    /* Critical above-fold CSS to prevent flash */
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{height:100%;background:#050810;color:#e8f0ff;font-family:system-ui,sans-serif;overflow:hidden}
     #root{height:100dvh;display:flex;flex-direction:column}
@@ -26,7 +25,6 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').then((registration) => {
-          // Forcefully cache Vite's hashed JS and CSS files immediately for offline mode
           const assets = Array.from(document.querySelectorAll('script[src], link[rel="stylesheet"]'))
                               .map(el => el.src || el.href)
                               .filter(url => url && url.startsWith(window.location.origin));

@@ -108,7 +108,7 @@ export function ProfileTab({ profile, onUpdate }: Props) {
         </div>
       </div>
 
-      {/* AI MODEL SETTINGS */}
+      {}
       <div className="card">
         <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 14 }}>AI Model Settings</div>
         <div className="input-group">

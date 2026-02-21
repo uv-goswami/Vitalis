@@ -2,7 +2,7 @@ export interface Theme {
   id: string;
   name: string;
   emoji: string;
-  swatchColor: string; // for the color swatch preview
+  swatchColor: string;
   vars: Record<string, string>;
 }
 

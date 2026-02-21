@@ -1,7 +1,3 @@
-// ============================================================
-// VitalAI Records Store — all data stays in localStorage
-// ============================================================
-
 function load<T>(key: string): T[] {
   try { return JSON.parse(localStorage.getItem(key) || '[]'); }
   catch { return []; }
@@ -28,7 +24,6 @@ export function todayStr() {
   return new Date().toDateString();
 }
 
-// ---- User Profile ----
 export interface UserProfile {
   name: string;
   gender: 'male' | 'female' | 'other';
@@ -39,7 +34,7 @@ export interface UserProfile {
   primaryGoal: string;
   theme: string;
   onboarded: boolean;
-  aiModel: string; // ADDED: Tracks the active AI engine
+  aiModel: string;
 }
 
 const PROFILE_KEY = 'va_profile';
@@ -50,7 +45,7 @@ const DEFAULT_PROFILE: UserProfile = {
   primaryGoal: 'stay healthy',
   theme: 'midnight',
   onboarded: false,
-  aiModel: 'lfm2-350m-q4_k_m', // Default to Original Model
+  aiModel: 'lfm2-350m-q4_k_m', 
 };
 
 export const ProfileStore = {
@@ -58,7 +53,6 @@ export const ProfileStore = {
   save: (p: UserProfile): void => localStorage.setItem(PROFILE_KEY, JSON.stringify(p)),
 };
 
-// ---- Workouts ----
 export interface WorkoutEntry {
   id: string;
   date: string;
@@ -83,7 +77,6 @@ export const WorkoutStore = {
   },
 };
 
-// ---- Meals ----
 export interface MealEntry {
   id: string;
   date: string;
@@ -109,7 +102,6 @@ export const MealStore = {
   },
 };
 
-// ---- Body Metrics ----
 export interface BodyMetric {
   id: string;
   date: string;
@@ -134,7 +126,6 @@ export const MetricStore = {
   },
 };
 
-// ---- Daily Logs (water, steps, sleep, mood) ----
 export interface DailyLog {
   id: string;
   date: string;
@@ -176,7 +167,6 @@ export const DailyStore = {
   },
 };
 
-// ---- Goals ----
 export interface GoalEntry {
   id: string;
   createdAt: string;
@@ -202,7 +192,6 @@ export const GoalStore = {
   delete: (id: string): void => save(GOAL_KEY, load<GoalEntry>(GOAL_KEY).filter(e => e.id !== id)),
 };
 
-// ---- Photos ----
 export interface PhotoEntry {
   id: string;
   date: string;
@@ -222,7 +211,6 @@ export const PhotoStore = {
   delete: (id: string): void => save(PHOTO_KEY, load<PhotoEntry>(PHOTO_KEY).filter(e => e.id !== id)),
 };
 
-// ---- Period Tracking (female users) ----
 export interface PeriodEntry {
   id: string;
   startDate: string;
@@ -258,7 +246,6 @@ export const PeriodStore = {
   },
 };
 
-// ---- Chat History ----
 export interface ChatMsg {
   id: string;
   role: 'user' | 'assistant';
@@ -281,7 +268,6 @@ export const ChatStore = {
   clear: (): void => save(CHAT_KEY, []),
 };
 
-// ---- App Context Builder ----
 export function buildAppContext(): string {
   const profile = ProfileStore.get();
   const today = DailyStore.getToday();

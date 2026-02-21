@@ -76,7 +76,7 @@ export function DashboardTab({ onNav }: Props) {
               <path d="M12 16v-4M12 8h.01" />
             </svg>
           </div>
-          {/* Add flex: 1 and minWidth: 0 here to prevent flexbox collapsing */}
+          {}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="insight-label">VitalAI Insight</div>
             <div className="insight-text">{tip}</div>

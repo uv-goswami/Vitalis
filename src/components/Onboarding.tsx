@@ -24,7 +24,7 @@ export function Onboarding({ onComplete }: Props) {
 
   return (
     <div style={{height:'100dvh',display:'flex',flexDirection:'column',overflow:'hidden',background:'var(--bg)'}}>
-      {/* Progress */}
+      {}
       <div className="step-dots">
         {[0,1,2,3].map(i => (
           <div key={i} className={`step-dot${i===step?' active':''}`} style={{width: i===step ? 24 : 8}}/>

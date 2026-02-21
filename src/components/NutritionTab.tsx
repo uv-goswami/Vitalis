@@ -12,7 +12,6 @@ export function NutritionTab() {
   const [meals, setMeals] = useState<MealEntry[]>(MealStore.getAll());
   const [showAdd, setShowAdd] = useState(false);
   
-  // FIXED: Explicitly typed the meal type union so TS allows state changes
   const [form, setForm] = useState({ 
     mealType: 'breakfast' as 'breakfast' | 'lunch' | 'dinner' | 'snack', 
     foods: '', 

@@ -38,7 +38,6 @@ export function HealthTab({ profile }: Props) {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddPeriod, setShowAddPeriod] = useState(false);
 
-  // FIXED: Explicitly defined union types instead of `as const`
   const [newGoal, setNewGoal] = useState({ title: '', category: 'fitness', target: 1, unit: '', current: 0 });
   const [newPeriod, setNewPeriod] = useState({ 
     startDate: new Date().toISOString().slice(0, 10), 
