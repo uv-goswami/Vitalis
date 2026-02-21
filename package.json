@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && mkdir -p dist/wasm && cp -r public/wasm/* dist/wasm/",
     "preview": "vite preview"
   },
-  "dependencies": {
+  "dependencies": {git add package.json
     "@runanywhere/web": "0.1.0-beta.8",
     "@runanywhere/web-llamacpp": "0.1.0-beta.8",
     "@runanywhere/web-onnx": "0.1.0-beta.8",
