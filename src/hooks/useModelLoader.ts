@@ -1,86 +1,129 @@
-import { useState, useCallback, useRef } from 'react';
-import { ModelManager, ModelCategory, EventBus } from '@runanywhere/web';
+import { useState, useEffect, useCallback } from 'react';
+import { ModelCategory, EventBus } from '@runanywhere/web';
+import { initSDK, ModelManager } from '../lib/runanywhere';
+import { ProfileStore } from '../lib/records';
 
 export type LoaderState = 'idle' | 'downloading' | 'loading' | 'ready' | 'error';
 
-interface ModelLoaderResult {
+export interface ModelLoaderHook {
   state: LoaderState;
-  progress: number;
+  progress: number | null;
   error: string | null;
   ensure: () => Promise<boolean>;
+  modelId: string;
 }
 
-/**
- * Hook to download + load models for a given category.
- * Tracks download progress and loading state.
- *
- * @param category - Which model category to ensure is loaded.
- * @param coexist  - If true, only unload same-category models (allows STT+LLM+TTS to coexist).
- */
-export function useModelLoader(category: ModelCategory, coexist = false): ModelLoaderResult {
-  const [state, setState] = useState<LoaderState>(() =>
-    ModelManager.getLoadedModel(category) ? 'ready' : 'idle',
-  );
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const loadingRef = useRef(false);
+let _globalState: LoaderState = 'idle';
+let _globalProgress = 0;
+let _loadPromise: Promise<boolean> | null = null;
+let _activeModelId = ProfileStore.get().aiModel || 'lfm2-350m-q4_k_m';
+const _listeners = new Set<() => void>();
 
-  const ensure = useCallback(async (): Promise<boolean> => {
-    // Already loaded
-    if (ModelManager.getLoadedModel(category)) {
-      setState('ready');
-      return true;
-    }
+function notify() { _listeners.forEach(fn => fn()); }
 
-    if (loadingRef.current) return false;
-    loadingRef.current = true;
+function setGlobal(s: LoaderState, p = _globalProgress) {
+  _globalState = s;
+  _globalProgress = p;
+  notify();
+}
 
+// Triggers the UI to reset and load the new model when switched
+export async function switchAIModel(newModelId: string) {
+  if (_activeModelId === newModelId) return;
+  _activeModelId = newModelId;
+  setGlobal('idle', 0);
+  _loadPromise = null;
+}
+
+async function doLoad(onProgress?: (p: number) => void): Promise<boolean> {
+  if (_globalState === 'ready') return true;
+  if (_loadPromise) return _loadPromise;
+
+  _loadPromise = (async () => {
     try {
-      // Find a model for this category
-      const models = ModelManager.getModels().filter((m) => m.modality === category);
+      await initSDK();
+      const targetId = _activeModelId; // capture the currently selected model
+      
+      const models = ModelManager.getModels().filter(m => m.id === targetId);
       if (models.length === 0) {
-        setError(`No ${category} model registered`);
-        setState('error');
-        return false;
+        throw new Error(`Model ${targetId} not registered in SDK`);
       }
-
       const model = models[0];
 
-      // Download if needed
       if (model.status !== 'downloaded' && model.status !== 'loaded') {
-        setState('downloading');
-        setProgress(0);
-
-        const unsub = EventBus.shared.on('model.downloadProgress', (evt) => {
-          if (evt.modelId === model.id) {
-            setProgress(evt.progress ?? 0);
+        setGlobal('downloading', 0);
+        
+        const unsub = EventBus.shared.on('model.downloadProgress', (evt: any) => {
+          if (evt.modelId === targetId) {
+            const p = evt.progress ?? 0;
+            setGlobal('downloading', p);
+            onProgress?.(p);
           }
         });
 
-        await ModelManager.downloadModel(model.id);
+        await ModelManager.downloadModel(targetId);
         unsub();
-        setProgress(1);
       }
-
-      // Load
-      setState('loading');
-      const ok = await ModelManager.loadModel(model.id, { coexist });
-      if (ok) {
-        setState('ready');
-        return true;
-      } else {
-        setError('Failed to load model');
-        setState('error');
-        return false;
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-      setState('error');
-      return false;
-    } finally {
-      loadingRef.current = false;
+      
+      setGlobal('loading', 1);
+      onProgress?.(1);
+      
+      const ok = await ModelManager.loadModel(targetId);
+      if (!ok) throw new Error('Engine failed to load model into memory');
+      
+      setGlobal('ready', 1);
+      _loadPromise = null;
+      return true;
+    } catch (e) {
+      console.error('[useModelLoader] load failed:', e);
+      setGlobal('error', 0);
+      _loadPromise = null;
+      throw e;
     }
-  }, [category, coexist]);
+  })();
+  return _loadPromise;
+}
 
-  return { state, progress, error, ensure };
+export function useModelLoader(_category?: ModelCategory): ModelLoaderHook {
+  const [, rerender] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const listener = () => rerender(n => n + 1);
+    _listeners.add(listener);
+    return () => { _listeners.delete(listener); };
+  }, []);
+
+  useEffect(() => {
+    if (_globalState !== 'idle') return;
+    let alive = true;
+    initSDK().then(() => {
+      if (!alive || _globalState !== 'idle') return;
+      try {
+        const models = ModelManager.getModels().filter(m => m.id === _activeModelId);
+        if (models.length > 0 && (models[0].status === 'downloaded' || models[0].status === 'loaded')) {
+          doLoad().catch(() => {});
+        }
+      } catch { }
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, [_activeModelId]);
+
+  const ensure = useCallback(async (): Promise<boolean> => {
+    if (_globalState === 'ready') return true;
+    try {
+      return await doLoad();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      return false;
+    }
+  }, []);
+
+  return {
+    state: _globalState,
+    progress: _globalProgress,
+    error,
+    ensure,
+    modelId: _activeModelId
+  };
 }

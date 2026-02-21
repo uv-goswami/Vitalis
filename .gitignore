@@ -5,3 +5,6 @@ dist/
 *.tsbuildinfo
 .playwright-mcp/
 *.png
+.env
+.DS_Store
+*.log
