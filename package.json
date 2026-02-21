@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && mkdir -p dist/wasm && cp -r public/wasm/* dist/wasm/",
+    "build": "tsc -b && vite build && mkdir -p dist/wasm && cp -r public/wasm/* dist/wasm/ && cp -r public/wasm/* dist/assets/",
     "preview": "vite preview"
   },
   "dependencies": {
