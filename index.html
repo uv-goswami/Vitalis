@@ -6,12 +6,12 @@
   <meta name="theme-color" content="#050810" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="FitCoach" />
+  <meta name="apple-mobile-web-app-title" content="Vitalis" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="description" content="100% private offline AI health & fitness coach" />
+  <meta name="description" content="Vitalis: 100% private offline AI health & fitness coach" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="apple-touch-icon" href="/icon-192.png" />
-  <title>FitCoach AI</title>
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <title>Vitalis AI</title>
   <style>
     /* Critical above-fold CSS to prevent flash */
     *{margin:0;padding:0;box-sizing:border-box}
@@ -23,10 +23,20 @@
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
   <script> 
-    // Register service worker for PWA offline support
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(console.warn);
+        navigator.serviceWorker.register('/sw.js').then((registration) => {
+          // Forcefully cache Vite's hashed JS and CSS files immediately for offline mode
+          const assets = Array.from(document.querySelectorAll('script[src], link[rel="stylesheet"]'))
+                              .map(el => el.src || el.href)
+                              .filter(url => url && url.startsWith(window.location.origin));
+          
+          if (assets.length > 0) {
+            caches.open('vitalai-v4-static').then(cache => {
+              cache.addAll(['/', '/index.html', '/manifest.json', ...assets]);
+            });
+          }
+        }).catch(console.warn);
       });
     }
   </script>

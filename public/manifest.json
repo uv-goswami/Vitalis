@@ -1,17 +1,16 @@
 {
-  "name": "FitCoach AI",
-  "short_name": "FitCoach",
-  "description": "100% private offline AI health & fitness coach",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#050810",
-  "theme_color": "#050810",
+  "short_name": "Vitalis",
+  "name": "Vitalis AI Health",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>",
-      "sizes": "192x192",
+      "src": "/icon.svg",
       "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "start_url": "/",
+  "background_color": "#050810",
+  "display": "standalone",
+  "theme_color": "#050810"
 }
