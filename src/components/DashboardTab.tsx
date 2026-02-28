@@ -39,7 +39,14 @@ export function DashboardTab({ onNav }: Props) {
   useEffect(() => {
     refresh();
     window.addEventListener('focus', refresh);
-    return () => window.removeEventListener('focus', refresh);
+    
+    // ADDED: Lightweight polling to ensure data syncs instantly when switching tabs
+    const syncInterval = setInterval(refresh, 500);
+
+    return () => {
+      window.removeEventListener('focus', refresh);
+      clearInterval(syncInterval);
+    };
   }, []);
 
   const water = daily?.waterMl || 0;
@@ -76,7 +83,6 @@ export function DashboardTab({ onNav }: Props) {
               <path d="M12 16v-4M12 8h.01" />
             </svg>
           </div>
-          {}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="insight-label">VitalAI Insight</div>
             <div className="insight-text">{tip}</div>
